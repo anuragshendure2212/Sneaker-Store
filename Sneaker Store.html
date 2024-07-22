@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>The Sneaker Store</title>
+	<style>
+		body {
+			font-family: Arial, sans-serif;
+            background-color: blueviolet;
+		}
+        
+		.brand {
+			margin-bottom: 10px;
+            background-color: rgb(230, 227, 233)
+		}
+		.sneaker {
+			margin-bottom: 10px;
+            background-color: rgb(230, 227, 233)
+		}
+		.cart {
+			margin-bottom: 10px;
+            background-color: rgb(230, 227, 233)
+		}
+		.notification {
+			position: fixed;
+			top: 10px;
+			right: 10px;
+			background-color: #333;
+			color: #fff;
+			padding: 10px;
+			border-radius: 5px;
+			display: none;
+            color: black;
+		}
+	</style>
+</head>
+<body>
+	<h1>The Sneaker Store</h1>
+	<div class="brand">
+		<h2>Brands</h2>
+		<ul id="brand-list"></ul>
+	</div>
+	<div class="sneaker">
+		<h2>Sneakers</h2>
+		<ul id="sneaker-list"></ul>
+	</div>
+	<div class="cart">
+		<h2>Cart</h2>
+		<ul id="cart-list"></ul>
+		<button id="add-to-cart-btn">Add to Cart</button>
+	</div>
+	<div class="notification" id="new-release-notification">
+		<p>New sneaker releases!</p>
+		<ul id="new-release-list"></ul>
+	</div>
+	<script>
+		// Task 1: Product Catalog Enhancement
+		const brands = {};
+		const sneakers = [];
+
+		function addBrand(brandName) {
+			brands[brandName] = [];
+		}
+
+		function addSneaker(sneakerName, brandName) {
+			sneakers.push({ name: sneakerName, brand: brandName });
+			brands[brandName].push(sneakerName);
+		}
+
+		addBrand("Nike");
+		addBrand("Adidas");
+		addSneaker("Air Jordan 1", "Nike");
+		addSneaker("Yeezy Boost 350", "Adidas");
+		addSneaker("Air Force 1", "Nike");
+
+		const brandList = document.getElementById("brand-list");
+		for (const brandName in brands) {
+			const listItem = document.createElement("li");
+			listItem.textContent = brandName;
+			brandList.appendChild(listItem);
+		}
+
+		const sneakerList = document.getElementById("sneaker-list");
+		sneakers.forEach((sneaker) => {
+			const listItem = document.createElement("li");
+			listItem.textContent = sneaker.name;
+			sneakerList.appendChild(listItem);
+		});
+
+		// Task 2: Cart Persistence
+		const cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+		function addToCart(sneakerName) {
+			cart.push(sneakerName);
+			localStorage.setItem("cart", JSON.stringify(cart));
+			updateCart();
+		}
+
+		function updateCart() {
+			const cartList = document.getElementById("cart-list");
+			cartList.innerHTML = "";
+			cart.forEach((sneakerName) => {
+				const listItem = document.createElement("li");
+				listItem.textContent = sneakerName;
+				cartList.appendChild(listItem);
+			});
+		}
+
+		updateCart();
+
+		document.getElementById("add-to-cart-btn").addEventListener("click", () => {
+			const selectedSneaker = prompt("Enter the sneaker name to add to cart:");
+			if (selectedSneaker) {
+				addToCart(selectedSneaker);
+			}
+		});
+
+		// Task 3: New Releases Notification
+		const newReleases = [];
+
+		function fetchNewReleases() {
+			// Assume we have a function to fetch new releases from the database
+			const newReleaseData = fetchNewReleaseData();
+			newReleases.push(...newReleaseData);
+			updateNewReleaseNotification();
+		}
+
+		function updateNewReleaseNotification() {
+			const newReleaseNotification = document.getElementById("new-release-notification");
+			const newReleaseList = document.getElementById("new-release-list");
+			newReleaseList.innerHTML = "";
+			newReleases.forEach((newRelease) => {
+				const listItem = document.createElement("li");
+				listItem.textContent = newRelease;
+				newReleaseList.appendChild(listItem);
+			});
+			newReleaseNotification.style.display = "block";
+		}
+
+		setInterval(fetchNewReleases, 300000); // Fetch new releases every 5 minutes
+	</script>
+</body>
+</html>
